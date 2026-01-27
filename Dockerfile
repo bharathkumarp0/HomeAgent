@@ -1,5 +1,5 @@
 # Use a Java 23 runtime
-FROM eclipse-temurin:23-jdk-jammy
+FROM eclipse-temurin:17-jdk-jammy
 
 # Set working directory inside the container
 WORKDIR /app
