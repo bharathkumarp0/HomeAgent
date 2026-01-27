@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Analytics - SafeGhar</title><link rel="stylesheet" href="/css/app.css"><link rel="icon" href="/static/images/logo.png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<style>
+  /* ===================================================
+   SafeGhar — Unified app.css
+   Use at: src/main/resources/static/css/app.css
+   =================================================== */
+
+/* ---------- VARIABLES ---------- */
+:root{
+  --bg: #f6fbff;
+  --panel: #ffffff;
+  --muted: #6b7280;
+  --text: #071233;
+  --accent1: #4f46e5;   /* indigo */
+  --accent2: #06b6d4;   /* teal */
+  --accent3: #f97316;   /* orange */
+  --success: #059669;
+  --warn: #b45309;
+  --danger: #b91c1c;
+  --glass: rgba(15,23,42,0.04);
+  --radius: 12px;
+  --shadow-lg: 0 18px 50px rgba(16,24,40,0.08);
+  --shadow-sm: 0 8px 20px rgba(16,24,40,0.04);
+  --ease: cubic-bezier(.2,.9,.2,1);
+}
+
+/* ---------- RESET ---------- */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  background: linear-gradient(120deg,#f0f7ff,#fbfdff);
+  color:var(--text);
+  line-height:1.45;
+  font-size:15px;
+}
+
+/* ---------- LAYOUT ---------- */
+.app-container,
+.dash-root{display:flex;min-height:100vh;}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar,
+.dash-sidebar {
+  width: 240px;
+  background: linear-gradient(180deg,var(--accent1), #7c3aed);
+  color: #fff;
+  padding: 20px 16px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:14px;
+  box-shadow: 6px 0 24px rgba(79,70,229,0.06);
+}
+
+.brand{display:flex;gap:12px;align-items:center}
+.brand img{height:44px;border-radius:8px;background:rgba(255,255,255,0.06);padding:6px}
+.brand h2, .brand-title{font-weight:800;font-size:16px}
+.brand-sub{font-size:12px;opacity:0.9}
+
+/* nav */
+.sidebar nav, .dash-sidebar .nav{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.sidebar nav a, .nav-item {
+  display:block;padding:10px 12px;border-radius:10px;text-decoration:none;color:rgba(255,255,255,0.95);
+  font-weight:700;transition:all .18s var(--ease);
+}
+.sidebar nav a:hover, .nav-item:hover{transform:translateX(6px);opacity:.97}
+.sidebar nav a.active, .nav-item.active{background:rgba(255,255,255,0.12)}
+
+/* sidebar footer */
+.sidebar-footer, .sidebar .sidebar-footer{display:flex;flex-direction:column;gap:10px}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.12);color:white;padding:8px;border-radius:10px;font-weight:700;cursor:pointer}
+.user-small{display:flex;align-items:center;gap:10px}
+.avatar{width:42px;height:42px;border-radius:10px;background:#fff;color:var(--accent1);display:flex;align-items:center;justify-content:center;font-weight:800}
+.uinfo .u-name{font-weight:700}
+.uinfo .u-role{font-size:12px;color:rgba(255,255,255,0.85)}
+
+/* ---------- MAIN ---------- */
+.main, .dash-main {flex:1; padding: 22px 28px; overflow:auto}
+
+/* topbar */
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.topbar h1{font-size:20px;margin:0}
+.controls{display:flex;align-items:center;gap:10px}
+
+/* search */
+.search{width:100%;padding:12px 16px;border-radius:12px;border:1px solid #e6f0ff;background:#fff;box-shadow:0 10px 30px rgba(16,24,40,0.03)}
+.status-pill{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.85);font-weight:700;color:var(--muted);font-size:13px}
+
+/* ---------- BUTTONS ---------- */
+.btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:800;transition:all .18s var(--ease)}
+.btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;box-shadow:0 10px 30px rgba(79,70,229,0.12)}
+.btn-primary:hover{transform:translateY(-3px)}
+.btn-sm{padding:8px 10px;border-radius:10px;background:#eef2ff;color:var(--accent1);font-weight:800}
+.btn-ghost{background:transparent;border:1px solid #eef6ff;color:var(--accent1)}
+
+/* ---------- CARDS / STATS ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.card{background:var(--panel);padding:16px;border-radius:14px;box-shadow:var(--shadow-sm);transition:all .18s var(--ease)}
+.card:hover{transform:translateY(-6px)}
+.card h3{color:var(--muted);font-size:13px;margin:0}
+.card .value{font-size:22px;font-weight:800;color:var(--accent1);margin-top:8px}
+
+/* ---------- GRID / PANELS ---------- */
+.grid, .content-grid{display:grid;grid-template-columns:2fr 360px;gap:18px}
+.col-left{display:flex;flex-direction:column;gap:16px}
+.col-right{display:flex;flex-direction:column;gap:14px}
+
+.panel{background:var(--panel);padding:16px;border-radius:14px;box-shadow:var(--shadow-sm);overflow:hidden}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.panel-actions{display:flex;gap:8px}
+
+/* big card grid (dashboard) */
+.card-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.big-card{background:var(--panel);padding:18px;border-radius:12px;box-shadow:var(--shadow-sm);cursor:pointer;position:relative;transition:all .18s var(--ease)}
+.big-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-lg)}
+.big-card .icon{width:44px;height:44px;border-radius:10px;background:linear-gradient(90deg,#eef2ff,#f8fdff);display:flex;align-items:center;justify-content:center;font-size:18px}
+.big-card .card-title{font-weight:800;margin-top:10px}
+.big-card .card-sub{color:var(--muted);margin-top:6px}
+.big-card .risk{position:absolute;right:12px;bottom:12px;padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px}
+.risk.high{background:#fee2e2;color:var(--danger)}
+.risk.medium{background:#fff7ed;color:var(--warn)}
+.risk.low{background:#ecfeff;color:#065f46}
+
+/* ---------- TABLE ---------- */
+.table{width:100%;border-collapse:collapse;font-size:14px}
+.table th, .table td{padding:12px;border-bottom:1px solid #f3f6fb;text-align:left}
+.table th{color:var(--muted);font-weight:800}
+
+/* ---------- LISTS ---------- */
+.list, .suggestions-list, .rem-list{list-style:none;padding:0;margin:0}
+.list li, .rem-list li{padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfeff);border:1px solid #f3f6fb;margin-bottom:8px}
+.suggestion{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;background:linear-gradient(180deg,#f8fbff,#ffffff);box-shadow:var(--shadow-sm)}
+.suggestion .s-left{width:44px;height:44px;border-radius:10px;background:linear-gradient(90deg,#eef2ff,#f8fdff);display:flex;align-items:center;justify-content:center;font-weight:800}
+.suggestion .s-meta{flex:1}
+
+/* ---------- CHAT / AI ---------- */
+.chat-window{height:160px;border-radius:10px;padding:10px;background:#fbfeff;border:1px solid #eef8ff;overflow:auto}
+.chat-bubble{padding:8px 10px;border-radius:10px;margin:8px 0;max-width:80%}
+.chat-bubble.user{background:#eef2ff;margin-left:auto}
+.chat-bubble.bot{background:#fff}
+
+/* chat controls */
+.chat-controls{display:flex;gap:8px;margin-top:8px}
+.input{width:100%;padding:10px;border-radius:10px;border:1px solid #eef6ff}
+
+/* ---------- FLOATING ACTION BUTTON ---------- */
+.fab{position:fixed;right:28px;bottom:28px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;border:0;width:56px;height:56px;border-radius:999px;box-shadow:0 12px 40px rgba(79,70,229,0.18);font-size:26px;cursor:pointer;transition:transform .18s var(--ease)}
+.fab:hover{transform:translateY(-6px)}
+
+/* ---------- MODAL ---------- */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(7,10,20,0.45);z-index:80}
+.modal[aria-hidden="false"], .modal.show{display:flex}
+.modal-panel{background:var(--panel);padding:18px;border-radius:12px;width:100%;max-width:520px;box-shadow:0 18px 60px rgba(16,24,40,0.08);position:relative}
+.close-x{position:absolute;right:12px;top:8px;border:0;background:transparent;font-size:18px;cursor:pointer}
+
+/* ---------- SMALL UTILITIES ---------- */
+.kv{display:flex;justify-content:space-between;align-items:center}
+.small-muted{font-size:13px;color:var(--muted)}
+.p-value{font-weight:800;font-size:18px;color:var(--accent1)}
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes floatIn {
+  from { transform: translateY(12px); opacity:0; }
+  to { transform: translateY(0); opacity:1; }
+}
+.fade-up { animation: floatIn .45s var(--ease) both; }
+
+/* apply subtle entrance to panels */
+.panel, .card, .big-card { will-change: transform, opacity; }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:1100px){
+  .card-grid{grid-template-columns:repeat(2,1fr)}
+  .grid, .content-grid{grid-template-columns:1fr 320px}
+}
+@media (max-width:760px){
+  .sidebar, .dash-sidebar { display:none; }
+  .main, .dash-main { padding:14px; }
+  .grid, .content-grid { grid-template-columns:1fr; }
+  .stats { grid-template-columns:repeat(2,1fr); gap:12px; }
+  .fab{right:16px;bottom:16px}
+}
+
+/* ---------- PRINT / TWEAKS ---------- */
+@media print{
+  .sidebar, .fab, .modal, .btn, .top-status { display:none !important; }
+  .panel { box-shadow:none; border:1px solid #eee; }
+}
+
+</style>
+<body>
+<div class="app-container">
+  <aside class="sidebar">
+    <div class="brand"><img src="/static/images/logo.png"><h2>SafeGhar</h2></div>
+    <nav>
+      <a th:href="@{/dashboard}" class="active">Dashboard</a>
+      <a th:href="@{/inventory}">Inventory</a>
+      <a th:href="@{/document}">Documents</a>
+      <a th:href="@{/reminders}">Reminders</a>
+      <a th:href="@{/analytics}">Analytics</a>
+      <a th:href="@{/ai}">AI Assistant</a>
+      <a th:href="@{/settings}">Settings</a>
+      <a th:href="@{/logout}">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="topbar"><div class="left"><h1>Analytics</h1></div></div>
+
+    <div class="grid">
+      <div class="panel">
+        <h3>Spend by Category</h3>
+        <canvas id="catChart" height="160"></canvas>
+      </div>
+
+      <aside class="panel">
+        <h3>Quick Stats</h3>
+        <div class="kv"><div class="small">Average Warranty (years)</div><div><strong>2.4</strong></div></div>
+        <div class="kv" style="margin-top:8px"><div class="small">Top Category</div><div><strong>Electronics</strong></div></div>
+      </aside>
+    </div>
+
+    <div style="margin-top:16px" class="panel">
+      <h3>Items by Room (Sample)</h3>
+      <canvas id="roomChart" height="100"></canvas>
+    </div>
+  </main>
+</div>
+
+<script>
+  // charts
+  const render = ()=> {
+    new Chart(document.getElementById('catChart'), {type:'doughnut',
+      data:{labels:['Electronics','Appliances','Furniture'],datasets:[{data:[45,30,25],backgroundColor:['#2563eb','#06b6d4','#fb923c']}]}
+    });
+    new Chart(document.getElementById('roomChart'), {type:'bar',
+      data:{labels:['Living','Kitchen','Bedroom'],datasets:[{data:[40,24,36],backgroundColor:'#2563eb'}]},
+      options:{plugins:{legend:{display:false}}}
+    });
+  };
+  document.addEventListener('DOMContentLoaded', render);
+</script>
+<script src="/js/app.js"></script>
+</body></html>

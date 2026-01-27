@@ -1,0 +1,183 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background: #f8fafc;
+    color: #1e293b;
+}
+
+/* ✅ HEADER */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 50px;
+    background: white;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.08);
+}
+
+.logo-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-img {
+    height: 45px;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+.nav-links a {
+    margin-left: 30px;
+    text-decoration: none;
+    color: #1e293b;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: #2563eb;
+}
+
+/* ✅ HERO SECTION */
+.hero {
+    padding: 90px 20px;
+    text-align: center;
+    background: linear-gradient(120deg, #2563eb, #38bdf8);
+    color: white;
+}
+
+.hero h1 {
+    font-size: 46px;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    max-width: 700px;
+    margin: auto;
+    font-size: 18px;
+    opacity: 0.95;
+}
+
+.hero-btn {
+    margin-top: 30px;
+    padding: 14px 40px;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background: white;
+    color: #2563eb;
+    transition: 0.3s;
+}
+
+.hero-btn:hover {
+    background: #dbeafe;
+}
+
+/* ✅ FEATURES */
+.features {
+    padding: 80px 50px;
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.feature-box {
+    background: white;
+    padding: 30px;
+    text-align: center;
+    border-radius: 18px;
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.06);
+    transition: 0.3s;
+}
+
+.feature-box:hover {
+    transform: translateY(-10px);
+}
+
+.feature-box h3 {
+    color: #2563eb;
+    margin-bottom: 10px;
+}
+
+/* ✅ SECTIONS */
+.section {
+    padding: 80px 40px;
+    text-align: center;
+}
+
+.section h2 {
+    font-size: 36px;
+    margin-bottom: 25px;
+    color: #2563eb;
+}
+
+/* ✅ DASHBOARD */
+.dashboard-preview {
+    display: grid;
+    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    margin-top: 30px;
+}
+
+.card {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    color: white;
+    padding: 30px;
+    border-radius: 18px;
+    font-size: 18px;
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
+}
+
+.card span {
+    font-size: 26px;
+    font-weight: bold;
+    display: block;
+    margin-top: 5px;
+}
+
+/* ✅ AI SECTION */
+.ai {
+    background: #e0f2fe;
+}
+
+/* ✅ CONTACT */
+.contact {
+    background: white;
+}
+
+/* ✅ FOOTER */
+footer {
+    padding: 20px;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* ✅ RESPONSIVE */
+@media (max-width: 700px) {
+    .main-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-links a {
+        margin-left: 15px;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+    }
+}

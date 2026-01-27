@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>Document Vault – SafeGhar</title>
+  <link rel="icon" th:href="@{/images/logo.png}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg,#f8fafc,#e2e8f0);
+      min-height: 100vh;
+    }
+
+    .app-container { display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 280px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      padding: 2.5rem 2rem;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .sidebar h2 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      background: linear-gradient(135deg,#6366f1,#8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 3rem;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 18px;
+      border-radius: 18px;
+      color: #64748b;
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      transition: 0.3s;
+    }
+
+    .sidebar a.active,
+    .sidebar a:hover {
+      background: rgba(99,102,241,0.12);
+      color: #1e293b;
+    }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      padding: 3rem 2.5rem;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .topbar h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.25s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg,#6366f1,#8b5cf6);
+      color: white;
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); }
+
+    .btn-edit {
+      background: #f59e0b;
+      color: white;
+      font-size: 0.85rem;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+      font-size: 0.85rem;
+    }
+
+    /* GRID */
+    .doc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(300px,1fr));
+      gap: 1.5rem;
+    }
+
+    .doc-card {
+      background: white;
+      padding: 1.6rem;
+      border-radius: 18px;
+      border-left: 5px solid #6366f1;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      transition: transform .25s ease;
+    }
+
+    .doc-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .doc-card b {
+      font-size: 1.25rem;
+      color: #1e293b;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .doc-card p {
+      color: #64748b;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .doc-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .empty-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 4rem;
+      color: #94a3b8;
+    }
+
+    /* MODALS */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2.3rem;
+      width: 420px;
+      border-radius: 22px;
+    }
+
+    .input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+      /* 🎪 REQUIRED CSS ANIMATIONS */
+  @keyframes mouseFloat {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.5);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+    50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.4); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+    100% { transform: translateY(0px) rotate(360deg); }
+  }
+
+
+
+
+
+
+  </style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2><i class="fas fa-gem"></i> SafeGhar</h2>
+    <a th:href="@{/dashboard}"><i class="fas fa-home"></i> Dashboard</a>
+    <a th:href="@{/inventorys}"><i class="fas fa-boxes"></i> Inventory</a>
+    <a th:href="@{/document}" class="active"><i class="fas fa-file-alt"></i> Documents</a>
+    <a th:href="@{/reminders}"><i class="fas fa-bell"></i> Reminders</a>
+    <a th:href="@{/ai}"><i class="fas fa-robot"></i> AI Assistant</a>
+    <a th:href="@{/settings}"><i class="fas fa-cog"></i> Settings</a>
+    <a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="topbar">
+      <h1>📁 Document Vault</h1>
+      <button class="btn btn-primary" onclick="openAddModal()">
+        <i class="fas fa-plus"></i> Add Document
+      </button>
+    </div>
+
+    <div class="doc-grid">
+
+      <div class="doc-card" th:each="doc : ${documents}">
+        <b th:text="${doc.documentName}"></b>
+        <p><i class="fas fa-map-marker-alt"></i>
+          <span th:text="${doc.physicalLocation}"></span>
+        </p>
+
+        <div class="doc-actions">
+          <button class="btn btn-edit"
+                  th:attr="onclick=|openEditModal('${doc.documentId}','${doc.documentName}','${doc.physicalLocation}')|">
+            Edit
+          </button>
+
+          <form th:action="@{/document/delete}" method="post">
+            <input type="hidden" name="id" th:value="${doc.documentId}">
+            <button class="btn btn-danger" type="submit">Delete</button>
+          </form>
+        </div>
+      </div>
+
+      <div th:if="${#lists.isEmpty(documents)}" class="empty-state">
+        No documents found.
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal" id="addModal">
+  <div class="modal-content">
+    <h3>Add Document</h3>
+    <form th:action="@{/document/add}" method="post">
+      <input class="input" name="documentName" placeholder="Document Name" required>
+      <input class="input" name="physicalLocation" placeholder="Physical Location" required>
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">Save</button>
+        <button class="btn" type="button" onclick="closeAddModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <h3>Edit Document</h3>
+    <form th:action="@{/document/update}" method="post">
+      <input type="hidden" id="editId" name="id">
+      <input class="input" id="editName" name="documentName" required>
+      <input class="input" id="editLocation" name="physicalLocation" required>
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">Update</button>
+        <button class="btn" type="button" onclick="closeEditModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openAddModal(){ addModal.style.display="flex"; }
+  function closeAddModal(){ addModal.style.display="none"; }
+
+  function openEditModal(id,name,loc){
+    editId.value=id;
+    editName.value=name;
+    editLocation.value=loc;
+    editModal.style.display="flex";
+  }
+  function closeEditModal(){ editModal.style.display="none"; }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+    // 🐭 Mouse trail effect - 6px glowing particles
+    document.addEventListener('mousemove', (e) => {
+      const trail = document.createElement('div');
+      trail.style.cssText = `
+        position: fixed;
+        left: ${e.clientX}px;
+        top: ${e.clientY}px;
+        width: 6px;
+        height: 6px;
+        background: rgba(99, 102, 241, 0.6);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        animation: mouseFloat 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      `;
+      document.body.appendChild(trail);
+      setTimeout(() => trail.remove(), 1000);
+    });
+
+    // 🔮 Smooth hover effects (sidebar, buttons, cards)
+    document.querySelectorAll('.sidebar nav a, .panel, .toggle, .btn, .auth-btn, .google-btn, .card').forEach(el => {
+      el.addEventListener('mouseenter', function() {
+        if (!this.querySelector('input:focus')) {
+          this.style.transform = 'translateY(-4px) scale(1.01)';
+        }
+      });
+      el.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+
+    // ✨ Input focus animations
+    document.querySelectorAll('.auth-input, input, textarea').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.parentElement.style.transform = 'translateY(-2px)';
+      });
+      input.addEventListener('blur', function() {
+        this.parentElement.style.transform = 'translateY(0)';
+      });
+    });
+  });
+
+
+</script>
+
+</body>
+</html>

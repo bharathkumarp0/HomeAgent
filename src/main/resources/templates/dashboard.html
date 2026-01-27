@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>SafeGhar – Dashboard</title>
+  <link rel="icon" th:href="@{/images/logo.png}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    /* ===== RESET & BASE ===== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    /* Floating particles background */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image:
+            radial-gradient(2px 2px at 20px 30px, #cbd5e1, transparent),
+            radial-gradient(2px 2px at 40px 70px, rgba(148, 163, 184, 0.4), transparent),
+            radial-gradient(1px 1px at 90px 40px, #94a3b8, transparent),
+            radial-gradient(1px 1px at 130px 80px, rgba(148, 163, 184, 0.3), transparent);
+        background-repeat: repeat;
+        background-size: 200px 100px;
+        animation: float 25s infinite linear;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* ===== SMOOTH ANIMATIONS ===== */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+        100% { transform: translateY(0px) rotate(360deg); }
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.2); }
+        50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.4); }
+    }
+
+    @keyframes bounceIn {
+        0% { transform: scale(0.3); opacity: 0; }
+        50% { transform: scale(1.05); }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    .bounce-in { animation: bounceIn 0.6s ease forwards; }
+    .shimmer {
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+    }
+
+    /* ===== LAYOUT ===== */
+    .layout {
+        display: flex;
+        min-height: 100vh;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+        width: 280px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(25px);
+        border-right: 1px solid rgba(226, 232, 240, 0.8);
+        color: #334155;
+        padding: 2.5rem 2rem;
+        position: relative;
+        z-index: 10;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 30px rgba(0,0,0,0.05);
+    }
+
+    .sidebar:hover {
+        box-shadow: 8px 0 40px rgba(99, 102, 241, 0.1);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    /* FIXED LOGO - NO MOVEMENT */
+    .brand img {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    /* FIXED LOGO HOVER - JUST SCALE */
+    .brand:hover img {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(99, 102, 241, 0.3);
+    }
+
+    .brand h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 20px;
+        border-radius: 20px;
+        color: #64748b;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .sidebar nav a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+        transition: left 0.5s;
+    }
+
+    .sidebar nav a:hover::before {
+        left: 100%;
+    }
+
+    .sidebar nav a i {
+        font-size: 1.2rem;
+        width: 24px;
+        text-align: center;
+        transition: all 0.3s ease;
+        color: #94a3b8;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(147, 51, 234, 0.08));
+        backdrop-filter: blur(15px);
+        transform: translateX(12px) scale(1.02);
+        color: #1e293b;
+        box-shadow: 0 12px 35px rgba(99, 102, 241, 0.15);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .sidebar nav a.active i {
+        animation: pulse-glow 2s infinite;
+        color: #6366f1;
+    }
+
+    /* ===== MAIN ===== */
+    .main {
+        flex: 1;
+        padding: 3rem 2.5rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .topbar {
+        margin-bottom: 2.5rem;
+        text-align: center;
+    }
+
+    /* FIXED WELCOME TEXT - NO MOVEMENT */
+    .topbar h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1e293b, #334155);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.75rem;
+    }
+
+    .topbar p {
+        color: #64748b;
+        font-size: 1.2rem;
+        font-weight: 400;
+    }
+
+    /* ===== STATS CARDS - REDUCED SIZE ===== */
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(25px);
+        padding: 1.5rem 1.5rem; /* REDUCED PADDING */
+        border-radius: 20px; /* SMALLER RADIUS */
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-12px) scale(1.03); /* SMOOTHER HOVER */
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        animation: pulse-glow 1.5s infinite;
+    }
+
+    .stat-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .stat-card:nth-child(1) { border-top: 4px solid #3b82f6; }
+    .stat-card:nth-child(2) { border-top: 4px solid #10b981; }
+    .stat-card:nth-child(3) { border-top: 4px solid #f59e0b; }
+    .stat-card:nth-child(4) { border-top: 4px solid #ec4899; }
+
+    .stat-card h3 {
+        font-size: 0.9rem; /* SMALLER TEXT */
+        color: #475569;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .stat-card .value {
+        font-size: 2.25rem; /* REDUCED SIZE */
+        font-weight: 700;
+        background: linear-gradient(135deg, #1e293b, #334155);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-top: 0.25rem;
+    }
+
+    /* ===== PANELS - REDUCED SIZE ===== */
+    .grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .panel {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(25px);
+        padding: 1.75rem; /* REDUCED PADDING */
+        border-radius: 20px; /* SMALLER RADIUS */
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+
+    .panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #6366f1, transparent);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+    }
+
+    .panel:hover {
+        transform: translateY(-10px) scale(1.02); /* SMOOTHER */
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    .panel:hover::before {
+        transform: scaleX(1);
+    }
+
+    .wide {
+        grid-column: span 2;
+    }
+
+    .panel h2 {
+        font-size: 1.5rem; /* SLIGHTLY SMALLER */
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .list {
+        list-style: none;
+    }
+
+    .list li {
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        cursor: pointer;
+        position: relative;
+        padding-left: 2rem;
+        opacity: 0.9;
+    }
+
+    .list li:hover {
+        background: rgba(99, 102, 241, 0.08);
+        border-radius: 12px;
+        padding-left: 2rem;
+        transform: translateX(12px) scale(1.01);
+        opacity: 1;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.1);
+    }
+
+    .list li::before {
+        content: '✨';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        opacity: 0;
+        transition: all 0.3s ease;
+        color: #6366f1;
+    }
+
+    .list li:hover::before {
+        opacity: 1;
+        animation: bounceIn 0.5s ease;
+    }
+
+    .list b, .list span {
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .list small {
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+
+    .empty {
+        color: #94a3b8;
+        font-size: 1rem;
+        font-style: italic;
+        text-align: center;
+        padding: 2rem 1.5rem;
+        opacity: 0.8;
+    }
+
+    /* ===== AI BOX ===== */
+    .ai-box {
+        margin-top: 1rem;
+    }
+
+    .ai-box p {
+        background: rgba(99, 102, 241, 0.08);
+        padding: 1.25rem 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 1rem;
+        border-left: 4px solid #6366f1;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+
+    .ai-box p:hover {
+        transform: translateX(10px) scale(1.02);
+        background: rgba(99, 102, 241, 0.15);
+        box-shadow: 0 12px 35px rgba(99, 102, 241, 0.15);
+        border-left-width: 5px;
+    }
+
+    .ai-box p i {
+        margin-right: 10px;
+        color: #8b5cf6;
+        font-size: 1rem;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1200px) {
+        .grid { grid-template-columns: 1fr; }
+        .wide { grid-column: span 1; }
+        .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 90px;
+            padding: 2rem 1rem;
+        }
+        .brand h2, .sidebar nav a span { display: none; }
+        .main { padding: 2rem 1.5rem; }
+        .topbar h1 { font-size: 2.25rem; }
+        .stat-card { padding: 1.25rem 1.25rem; }
+        .panel { padding: 1.5rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="/images/homeangentlogo.png"  alt="SafeGhar Logo">
+      <h2>SafeGhar</h2>
+    </div>
+
+    <nav>
+      <a th:href="@{/dashboard}" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a>
+      <a th:href="@{/inventorys}"><i class="fas fa-boxes"></i><span>Inventory</span></a>
+      <a th:href="@{/document}"><i class="fas fa-file-alt"></i><span>Documents</span></a>
+      <a th:href="@{/reminders}"><i class="fas fa-bell"></i><span>Reminders</span></a>
+      <a th:href="@{/ai}"><i class="fas fa-robot"></i><span>AI Assistant</span></a>
+      <a th:href="@{/settings}"><i class="fas fa-cog"></i><span>Settings</span></a>
+      <a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <header class="topbar">
+      <h1><i class="fas fa-gem"></i> Welcome Back 👋</h1>
+      <p>Your home inventory dashboard is ready with fresh insights</p>
+    </header>
+
+    <!-- STATS -->
+    <section class="stats">
+      <div class="stat-card fade-in-up" style="animation-delay: 0.1s">
+        <h3><i class="fas fa-box"></i> Total Items</h3>
+        <div class="value" th:text="${totalItems}">0</div>
+      </div>
+
+      <div class="stat-card fade-in-up" style="animation-delay: 0.2s">
+        <h3><i class="fas fa-file"></i> Documents</h3>
+        <div class="value" th:text="${totalDocuments}">0</div>
+      </div>
+
+      <div class="stat-card fade-in-up" style="animation-delay: 0.3s">
+        <h3><i class="fas fa-clock"></i> Upcoming Reminders</h3>
+        <div class="value" th:text="${upcomingRemindersCount}">0</div>
+      </div>
+
+      <div class="stat-card fade-in-up" style="animation-delay: 0.4s">
+        <h3><i class="fas fa-lightbulb"></i> AI Suggestions</h3>
+        <div class="value">4</div>
+      </div>
+    </section>
+
+    <!-- GRID -->
+    <section class="grid">
+
+      <!-- INVENTORY -->
+      <div class="panel wide fade-in-up" style="animation-delay: 0.5s">
+        <h2><i class="fas fa-boxes-stacked"></i> Recently Added Items</h2>
+        <ul class="list">
+          <li th:each="i : ${recentInventory}">
+            <b th:text="${i.itemName}"></b>
+            <span th:text="' • ' + ${i.category}"></span>
+          </li>
+          <li th:if="${#lists.isEmpty(recentInventory)}" class="empty">
+            <i class="fas fa-inbox" style="margin-right: 8px;"></i> No inventory items yet
+          </li>
+        </ul>
+      </div>
+
+      <!-- REMINDERS -->
+      <div class="panel fade-in-up" style="animation-delay: 0.6s">
+        <h2><i class="fas fa-bell"></i> Upcoming Reminders</h2>
+        <ul class="list">
+          <li th:each="r : ${upcomingReminders}">
+            <b th:text="${r.title}"></b><br>
+            <small th:text="${r.reminderDate} + ' • ' + ${r.taskType}"></small>
+          </li>
+          <li th:if="${#lists.isEmpty(upcomingReminders)}" class="empty">
+            <i class="far fa-calendar-check" style="margin-right: 8px;"></i> No upcoming reminders
+          </li>
+        </ul>
+      </div>
+
+      <!-- DOCUMENTS -->
+      <div class="panel fade-in-up" style="animation-delay: 0.7s">
+        <h2><i class="fas fa-folder-open"></i> Recent Documents</h2>
+        <ul class="list">
+          <li th:each="d : ${recentDocuments}">
+            <span th:text="${d.documentName}"></span>
+          </li>
+          <li th:if="${#lists.isEmpty(recentDocuments)}" class="empty">
+            <i class="far fa-file" style="margin-right: 8px;"></i> No documents added
+          </li>
+        </ul>
+      </div>
+
+      <!-- AI -->
+      <div class="panel wide fade-in-up" style="animation-delay: 0.8s">
+        <h2><i class="fas fa-robot"></i> AI Assistant</h2>
+        <div class="ai-box">
+          <p><i class="fas fa-exclamation-triangle"></i>📌 Warranty expiring soon? Add a reminder.</p>
+          <p><i class="fas fa-archive"></i>📌 You have documents not used recently.</p>
+          <p><i class="fas fa-list"></i>📌 Organize inventory for better tracking.</p>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Ultra-interactive features - PERFECT SMOOTHNESS
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // 🐭 Mouse trail effect (KEEPING - YOU LOVE IT!)
+    document.addEventListener('mousemove', (e) => {
+      const trail = document.createElement('div');
+      trail.style.cssText = `
+        position: fixed;
+        left: ${e.clientX}px;
+        top: ${e.clientY}px;
+        width: 6px;
+        height: 6px;
+        background: rgba(99, 102, 241, 0.6);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        animation: float 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      `;
+      document.body.appendChild(trail);
+      setTimeout(() => trail.remove(), 1000);
+    });
+
+    // Enhanced hover effects - ULTRA SMOOTH
+    document.querySelectorAll('.stat-card, .panel, .sidebar nav a, .list li, .ai-box p').forEach(el => {
+      el.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-6px) scale(1.02)';
+        this.style.filter = 'brightness(1.05) drop-shadow(0 8px 25px rgba(99,102,241,0.15))';
+      });
+
+      el.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+        this.style.filter = 'brightness(1) drop-shadow(0 0 0 transparent)';
+      });
+    });
+
+    // 💥 Click ripple effect
+    document.querySelectorAll('.stat-card, .list li, .ai-box p').forEach(el => {
+      el.addEventListener('click', function(e) {
+        const ripple = document.createElement('div');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+
+        ripple.style.cssText = `
+          position: absolute;
+          width: ${size}px;
+          height: ${size}px;
+          left: ${x}px;
+          top: ${y}px;
+          background: rgba(99, 102, 241, 0.4);
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          pointer-events: none;
+        `;
+        this.style.position = 'relative';
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      });
+    });
+
+    // Scroll-triggered animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+        }
+      });
+    });
+
+    document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+  });
+</script>
+
+</body>
+</html>

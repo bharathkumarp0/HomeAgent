@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Reminders – SafeGhar</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+      min-height: 100vh;
+    }
+
+    .app-container { display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 280px;
+      background: #ffffff;
+      padding: 2.5rem 2rem;
+      border-right: 1px solid #e5e7eb;
+    }
+
+    .sidebar h2 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #6366f1;
+      margin-bottom: 2.5rem;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      color: #475569;
+      text-decoration: none;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .sidebar a.active,
+    .sidebar a:hover {
+      background: #eef2ff;
+      color: #4338ca;
+    }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      padding: 3rem;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .topbar h1 {
+      font-size: 2.3rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 14px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* PANEL */
+    .panel {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    }
+
+    .panel h3 {
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+      color: #1e293b;
+    }
+
+    /* REMINDER LIST */
+    .reminder-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .reminder-card {
+      background: #ffffff;
+      padding: 1.5rem;
+      border-radius: 18px;
+      border-left: 5px solid #6366f1;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .reminder-info b {
+      font-size: 1.2rem;
+      color: #1e293b;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .meta {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 14px;
+      background: #eef2ff;
+      color: #4338ca;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .delete-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* EMPTY */
+    .empty-state {
+      text-align: center;
+      color: #94a3b8;
+      padding: 3rem;
+      font-size: 1.1rem;
+    }
+
+    /* MODAL */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 22px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 1.2rem;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: #e5e7eb;
+      cursor: pointer;
+      font-weight: 600;
+    }
+     @keyframes mouseFloat {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.5);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+    50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.4); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+    100% { transform: translateY(0px) rotate(360deg); }
+  }
+
+
+      @keyframes mouseFloat {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.5);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.2); }
+    50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.4); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+    100% { transform: translateY(0px) rotate(360deg); }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  </style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2>SafeGhar</h2>
+    <a th:href="@{/dashboard}"><i class="fas fa-home"></i> Dashboard</a>
+    <a th:href="@{/inventorys}"><i class="fas fa-boxes"></i> Inventory</a>
+    <a th:href="@{/document}"><i class="fas fa-file-alt"></i> Documents</a>
+    <a th:href="@{/reminders}" class="active"><i class="fas fa-bell"></i> Reminders</a>
+    <a th:href="@{/ai}"><i class="fas fa-robot"></i> AI Assistant</a>
+    <a th:href="@{/settings}"><i class="fas fa-cog"></i> Settings</a>
+    <a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="topbar">
+      <h1>🔔 Reminders</h1>
+      <button class="btn-primary" onclick="openModal()">+ Add Reminder</button>
+    </div>
+
+    <section class="panel">
+      <h3>Upcoming Reminders</h3>
+
+      <div class="reminder-list">
+        <div class="reminder-card" th:each="r : ${reminderList}">
+          <div class="reminder-info">
+            <b th:text="${r.title}"></b>
+            <div class="meta" th:text="${r.reminderDate}"></div>
+            <span class="badge" th:text="${r.taskType}"></span>
+          </div>
+
+          <form th:action="@{/reminders/delete}" method="post">
+            <input type="hidden" name="id" th:value="${r.id}">
+            <button type="submit" class="delete-btn">
+              <i class="fas fa-trash"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="empty-state" th:if="${#lists.isEmpty(reminderList)}">
+        No reminders added yet.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3>Add Reminder</h3>
+
+    <form th:action="@{/reminders/add}" th:object="${reminderDTO}" method="post">
+      <input class="input" th:field="*{title}" placeholder="Reminder title" required>
+      <input class="input" type="date" th:field="*{reminderDate}" required>
+
+      <select class="input" th:field="*{taskType}">
+        <option value="Task">Task</option>
+        <option value="Daily">Daily</option>
+        <option value="Family">Family</option>
+      </select>
+
+      <div class="modal-actions">
+        <button type="submit" class="btn-primary">Save</button>
+        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openModal() {
+    document.getElementById("modal").style.display = "flex";
+  }
+
+  function closeModal() {
+    document.getElementById("modal").style.display = "none";
+  }
+
+  document.getElementById("modal").addEventListener("click", function(e) {
+    if (e.target === this) closeModal();
+  });
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+    // 🐭 Mouse trail effect - 6px glowing particles
+    document.addEventListener('mousemove', (e) => {
+      const trail = document.createElement('div');
+      trail.style.cssText = `
+        position: fixed;
+        left: ${e.clientX}px;
+        top: ${e.clientY}px;
+        width: 6px;
+        height: 6px;
+        background: rgba(99, 102, 241, 0.6);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        animation: mouseFloat 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      `;
+      document.body.appendChild(trail);
+      setTimeout(() => trail.remove(), 1000);
+    });
+
+    // 🔮 Smooth hover effects (sidebar, buttons, cards)
+    document.querySelectorAll('.sidebar nav a, .panel, .toggle, .btn, .auth-btn, .google-btn, .card').forEach(el => {
+      el.addEventListener('mouseenter', function() {
+        if (!this.querySelector('input:focus')) {
+          this.style.transform = 'translateY(-4px) scale(1.01)';
+        }
+      });
+      el.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+
+    // ✨ Input focus animations
+    document.querySelectorAll('.auth-input, input, textarea').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.parentElement.style.transform = 'translateY(-2px)';
+      });
+      input.addEventListener('blur', function() {
+        this.parentElement.style.transform = 'translateY(0)';
+      });
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // 🐭 Mouse trail effect - 6px glowing particles
+    document.addEventListener('mousemove', (e) => {
+      const trail = document.createElement('div');
+      trail.style.cssText = `
+        position: fixed;
+        left: ${e.clientX}px;
+        top: ${e.clientY}px;
+        width: 6px;
+        height: 6px;
+        background: rgba(99, 102, 241, 0.6);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        animation: mouseFloat 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      `;
+      document.body.appendChild(trail);
+      setTimeout(() => trail.remove(), 1000);
+    });
+
+    // 🔮 Smooth hover effects (sidebar, buttons, cards)
+    document.querySelectorAll('.sidebar nav a, .panel, .toggle, .btn, .auth-btn, .google-btn, .card').forEach(el => {
+      el.addEventListener('mouseenter', function() {
+        if (!this.querySelector('input:focus')) {
+          this.style.transform = 'translateY(-4px) scale(1.01)';
+        }
+      });
+      el.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+
+    // ✨ Input focus animations
+    document.querySelectorAll('.auth-input, input, textarea').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.parentElement.style.transform = 'translateY(-2px)';
+      });
+      input.addEventListener('blur', function() {
+        this.parentElement.style.transform = 'translateY(0)';
+      });
+    });
+  });
+
+</script>
+
+</body>
+</html>

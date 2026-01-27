@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Logged Out – SafeGhar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+    }
+
+    body {
+        height: 100vh;
+        background: linear-gradient(135deg, #5a8dee, #6ed3ff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logout-box {
+        background: white;
+        padding: 40px;
+        width: 360px;
+        text-align: center;
+        border-radius: 18px;
+        box-shadow: 0 10px 35px rgba(0,0,0,0.2);
+        animation: fadeIn 0.6s ease;
+    }
+
+    .logout-box img {
+        width: 70px;
+        margin-bottom: 15px;
+    }
+
+    .logout-box h2 {
+        margin-bottom: 10px;
+        color: #2d3436;
+    }
+
+    .logout-box p {
+        font-size: 14px;
+        color: #636e72;
+        margin-bottom: 25px;
+    }
+
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .btn-login {
+        background: #5a8dee;
+        color: white;
+    }
+
+    .btn-login:hover {
+        background: #407ae8;
+    }
+
+    .btn-home {
+        border: 1px solid #dfe6e9;
+        color: #2d3436;
+    }
+
+    .btn-home:hover {
+        background: #f1f2f6;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="logout-box">
+
+  <!-- Optional logo -->
+  <img th:src="@{/images/logo.png}" alt="SafeGhar Logo">
+
+  <h2>You’ve been logged out</h2>
+  <p>Your session has ended successfully.<br>
+    Thank you for using <b>SafeGhar</b>.</p>
+
+  <a th:href="@{/login}" class="btn btn-login">Login Again</a>
+  <a th:href="@{/dashboard}" class="btn btn-home">Back to Home</a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>SafeGhar – Smart Home Organizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/homepage.css">
+    <link rel="icon" href="/static/images/logo.png">
+    <style>
+        /* RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #f7faff;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 60px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-box {
+            display:flex;
+            align-items:center;
+            gap: 10px;
+        }
+
+        .logo {
+            height:40px;
+        }
+
+        nav a {
+            margin-left: 25px;
+            text-decoration: none;
+            color: #475569;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        nav a:hover {
+            color: #2563eb;
+                       text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white !important;
+            padding: 10px 22px;
+            border-radius: 8px;
+                       text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: #e2efff;
+            padding: 10px 22px;
+            border-radius: 8px;
+            color: #2563eb;
+                       text-decoration: none;
+        }
+
+        /* HERO */
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 70px 60px;
+            animation: fadeIn 1s ease;
+        }
+
+        .hero-content {
+            width: 50%;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            margin-top: 15px;
+            color: #475569;
+            font-size: 18px;
+        }
+
+        .btn-group {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+           text-decoration: none;
+        }
+
+        .hero-img {
+            width: 460px;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        /* FEATURES */
+        .features {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .features-grid {
+            margin-top: 35px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            transition: transform .2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .icon {
+            font-size: 34px;
+            margin-bottom: 12px;
+        }
+
+        /* DEMO */
+        .demo {
+            padding: 60px;
+            text-align: center;
+        }
+
+        .demo-cards {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .demo-box {
+            background: white;
+            padding: 25px;
+            width: 220px;
+            border-radius: 12px;
+            font-size: 18px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            transition: .2s;
+        }
+
+        .demo-box:hover {
+            transform: scale(1.05);
+        }
+
+        /* AI */
+        .ai {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .ai-img {
+            margin-top: 25px;
+            width: 500px;
+            animation: float 4s infinite ease-in-out;
+        }
+
+        /* CONTACT */
+        .contact {
+            padding: 60px;
+            text-align: center;
+            background: #eef6ff;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #2563eb;
+            color: white;
+        }
+
+
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0);}
+            50% { transform: translateY(-12px);}
+            100% { transform: translateY(0);}
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+<!-- 🌟 HEADER -->
+<header class="header">
+    <div class="logo-box">
+        <img src="/static/images/logo.png" alt="My Logo"/>
+        <h2>SafeGhar</h2>
+    </div>
+
+    <nav>
+        <a href="#features">Features</a>
+        <a href="#demo">Demo</a>
+        <a href="#ai">AI Assistant</a>
+        <a href="#contact">Contact</a>
+        <a th:href="@{/signUp}" class="btn-primary small">Sign Up</a>
+    </nav>
+</header>
+
+
+<!-- 🌟 HERO SECTION -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Organize Your Home Smarter — With SafeGhar</h1>
+        <p>
+            Store all home items, documents, reminders & daily routines in one place.
+            Track everything effortlessly with AI-powered smart suggestions.
+        </p>
+
+        <div class="btn-group">
+            <a th:href="@{/signUp}" class="btn-primary">Get Started</a>
+            <a href="#features" class="btn-secondary">Learn More</a>
+        </div>
+    </div>
+
+    <img src="/static/images/logo.png" class="hero-img" alt="">
+</section>
+
+
+<!-- 🌟 FEATURES SECTION -->
+<section id="features" class="features">
+    <h2>Everything Your Home Needs</h2>
+
+    <div class="features-grid">
+
+        <div class="feature-card">
+            <div class="icon">🏠</div>
+            <h3>Smart Inventory</h3>
+            <p>Manage all your home items with purchase & expiry dates.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="icon">📁</div>
+            <h3>Document Locator</h3>
+            <p>Save document details & exact location where they are kept.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="icon">⏰</div>
+            <h3>Daily Reminders</h3>
+            <p>Set family reminders, tasks, and expiry alerts.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="icon">🤖</div>
+            <h3>AI Assistant</h3>
+            <p>Ask about items, documents, reminders — AI helps instantly.</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- 🌟 DEMO SECTION -->
+<section id="demo" class="demo">
+    <h2>Peek Into Your Dashboard</h2>
+
+    <div class="demo-cards">
+
+        <div class="demo-box">
+            <h4>Total Items</h4>
+            <span>0 → 120</span>
+        </div>
+
+        <div class="demo-box">
+            <h4>Documents Stored</h4>
+            <span>0 → 75</span>
+        </div>
+
+        <div class="demo-box">
+            <h4>Reminders</h4>
+            <span>0 → 6</span>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- 🌟 AI SECTION -->
+<section id="ai" class="ai">
+    <h2>Meet Your Home’s Personal Assistant</h2>
+    <p>
+        SafeGhar AI can auto-organize your inventory, create reminders,
+        find documents, analyze your routines and much more.
+    </p>
+    <img th:src="@{/images/logo.png}" alt="My Logo" src="/static/images/logo.png"/>
+
+</section>
+
+
+<!-- 🌟 CONTACT SECTION -->
+<section id="contact" class="contact">
+    <h2>Contact Us</h2>
+    <p>Email: support@safeghar.com</p>
+    <p>Phone: +91 98765 43210</p>
+</section>
+
+
+<!-- 🌟 FOOTER -->
+<footer class="footer">
+    © 2025 SafeGhar — All Rights Reserved
+</footer>
+
+</body>
+</html>
