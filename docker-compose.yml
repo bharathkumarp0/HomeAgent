@@ -1,20 +1,28 @@
 services:
   mysql:
-    image: mysql:8.0-oraclelinux8  # ARM64 + x86_64 compatible
+    image: mysql:8.0-oraclelinux8
     environment:
       MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: HomeAgent
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root123
     ports:
       - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
+      interval: 10s
+      timeout: 5s
+      retries: 20  # Give MySQL time to fully start
 
   app:
     build: .
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/HomeAgent?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/HomeAgent?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy  # ✅ WAITS FOR MySQL
