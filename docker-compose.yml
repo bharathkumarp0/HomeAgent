@@ -4,7 +4,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: HomeAgent
-      # 🔥 REMOVED: MYSQL_USER & MYSQL_PASSWORD (causes conflict)
     ports:
       - "3307:3306"
     healthcheck:
@@ -26,17 +25,18 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    # 🔥 USE NC (netcat) - ALWAYS in Java image
     command: >
       sh -c "
-        echo '🔄 Waiting for MySQL...';
+        echo '🔄 Waiting for MySQL port 3306...';
         for i in {1..30}; do
-          if mysqladmin ping -h'mysql' -uroot -proot123 --silent; then
-            echo '✅ MySQL ready! Starting app...';
+          if nc -z mysql 3306; then
+            echo '✅ MySQL port ready! Starting app...';
             exec java -jar /app/target/HomeAgent-0.0.1-SNAPSHOT.jar;
           fi;
           echo '⏳ MySQL not ready ($i/30) - waiting...';
           sleep 2;
         done;
-        echo '❌ MySQL failed to start';
+        echo '❌ MySQL failed after 60s';
         exit 1;
       "
