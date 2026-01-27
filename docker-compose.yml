@@ -4,12 +4,11 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: HomeAgent
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root123
+      # 🔥 REMOVED: MYSQL_USER & MYSQL_PASSWORD (causes conflict)
     ports:
       - "3307:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -24,18 +23,20 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_DEFERED_NAMING: true
     depends_on:
       mysql:
         condition: service_healthy
-    # 🔥 MAGIC WAIT SCRIPT
     command: >
       sh -c "
-        echo 'Waiting for MySQL...';
-        while ! mysqladmin ping -h'mysql' -Proot123 -uroot --silent; do
-          echo 'MySQL not ready yet - waiting 2s...';
+        echo '🔄 Waiting for MySQL...';
+        for i in {1..30}; do
+          if mysqladmin ping -h'mysql' -uroot -proot123 --silent; then
+            echo '✅ MySQL ready! Starting app...';
+            exec java -jar /app/target/HomeAgent-0.0.1-SNAPSHOT.jar;
+          fi;
+          echo '⏳ MySQL not ready ($i/30) - waiting...';
           sleep 2;
         done;
-        echo 'MySQL ready! Starting app...';
-        java -jar /app/target/HomeAgent-0.0.1-SNAPSHOT.jar
+        echo '❌ MySQL failed to start';
+        exit 1;
       "
