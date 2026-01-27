@@ -1,4 +1,6 @@
-services:
+version: '3.8'  # ← ADD THIS VERSION
+
+services:       # ← ADD THIS services BLOCK
   mysql:
     image: mysql:8.0-oraclelinux8
     environment:
@@ -8,35 +10,28 @@ services:
       - "3307:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-      start_period: 30s
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 40s
 
   app:
     build: .
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/HomeAgent?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/HomeAgent?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&autoReconnect=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: 0
     depends_on:
       mysql:
         condition: service_healthy
-    # 🔥 USE NC (netcat) - ALWAYS in Java image
     command: >
       sh -c "
-        echo '🔄 Waiting for MySQL port 3306...';
-        for i in {1..30}; do
-          if nc -z mysql 3306; then
-            echo '✅ MySQL port ready! Starting app...';
-            exec java -jar /app/target/HomeAgent-0.0.1-SNAPSHOT.jar;
-          fi;
-          echo '⏳ MySQL not ready ($i/30) - waiting...';
-          sleep 2;
-        done;
-        echo '❌ MySQL failed after 60s';
-        exit 1;
+        echo '⏳ Waiting 45s for MySQL...';
+        sleep 45;
+        echo '🚀 Starting Spring Boot!';
+        exec java -jar /app/target/HomeAgent-0.0.1-SNAPSHOT.jar;
       "
