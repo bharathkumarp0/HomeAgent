@@ -10,19 +10,32 @@ services:
       - "3307:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 20  # Give MySQL time to fully start
+      retries: 30
+      start_period: 30s
 
   app:
     build: .
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/HomeAgent?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root123
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/HomeAgent?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DEFERED_NAMING: true
     depends_on:
       mysql:
-        condition: service_healthy  # ✅ WAITS FOR MySQL
+        condition: service_healthy
+    # 🔥 MAGIC WAIT SCRIPT
+    command: >
+      sh -c "
+        echo 'Waiting for MySQL...';
+        while ! mysqladmin ping -h'mysql' -Proot123 -uroot --silent; do
+          echo 'MySQL not ready yet - waiting 2s...';
+          sleep 2;
+        done;
+        echo 'MySQL ready! Starting app...';
+        java -jar /app/target/HomeAgent-0.0.1-SNAPSHOT.jar
+      "
