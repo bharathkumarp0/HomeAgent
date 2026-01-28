@@ -1,37 +1,37 @@
-version: '3.8'  # ← ADD THIS VERSION
+# version: '3.8'  # ← ADD THIS VERSION
 
-services:       # ← ADD THIS services BLOCK
-  mysql:
-    image: mysql:8.0-oraclelinux8
-    environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: HomeAgent
-    ports:
-      - "3307:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
-      interval: 10s
-      timeout: 10s
-      retries: 20
-      start_period: 40s
+# services:       # ← ADD THIS services BLOCK
+#   mysql:
+#     image: mysql:8.0-oraclelinux8
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root123
+#       MYSQL_DATABASE: HomeAgent
+#     ports:
+#       - "3307:3306"
+#     healthcheck:
+#       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
+#       interval: 10s
+#       timeout: 10s
+#       retries: 20
+#       start_period: 40s
 
-  app:
-    build: .
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/HomeAgent?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&autoReconnect=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root123
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: 0
-    depends_on:
-      mysql:
-        condition: service_healthy
-    command: >
-      sh -c "
-        echo '⏳ Waiting 45s for MySQL...';
-        sleep 45;
-        echo '🚀 Starting Spring Boot!';
-        exec java -jar /app/target/HomeAgent-0.0.1-SNAPSHOT.jar;
-      "
+#   app:
+#     build: .
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/HomeAgent?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&autoReconnect=true
+#       SPRING_DATASOURCE_USERNAME: root
+#       SPRING_DATASOURCE_PASSWORD: root123
+#       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: 0
+#     depends_on:
+#       mysql:
+#         condition: service_healthy
+#     command: >
+#       sh -c "
+#         echo '⏳ Waiting 45s for MySQL...';
+#         sleep 45;
+#         echo '🚀 Starting Spring Boot!';
+#         exec java -jar /app/target/HomeAgent-0.0.1-SNAPSHOT.jar;
+#       "
