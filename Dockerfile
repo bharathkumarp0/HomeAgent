@@ -2,22 +2,22 @@ FROM eclipse-temurin:17-jdk-jammy
 
 WORKDIR /app
 
-# Copy Maven wrapper FIRST and make executable ✅ FIXED
+# Copy Maven wrapper first (better layer caching)
 COPY mvnw .
 RUN chmod +x mvnw
 COPY .mvn .mvn
 COPY pom.xml .
 
-# Download dependencies
-RUN ./mvnw dependency:go-offline
+# Download dependencies (offline cache)
+RUN ./mvnw dependency:go-offline -B
 
-# Copy source code
+# Copy source
 COPY src src
 
-# Build executable JAR
-RUN ./mvnw clean package -DskipTests
+# Build JAR
+RUN ./mvnw clean package -DskipTests -B
 
 EXPOSE 8080
 
-# Use EXACT JAR filename ✅ FIXED
-CMD ["java", "-jar", "target/HomeAgent-0.0.1-SNAPSHOT.jar"]
+# Render sets PORT env var
+CMD ["sh", "-c", "java -jar target/HomeAgent-0.0.1-SNAPSHOT.jar"]
